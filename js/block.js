@@ -14,7 +14,7 @@
 const LONGPRESSTIME = 1500;
 const COLLAPSABLES = ['drum', 'start', 'action', 'matrix', 'pitchdrummatrix', 'rhythmruler', 'status', 'pitchstaircase', 'tempo', 'pitchslider', 'modewidget'];
 const NOHIT = ['hidden', 'hiddennoflow'];
-const SPECIALINPUTS = ['text', 'number', 'solfege', 'eastindiansolfege', 'notename', 'voicename', 'modename', 'drumname'];
+const SPECIALINPUTS = ['text', 'number', 'solfege', 'eastindiansolfege', 'notename', 'voicename', 'modename', 'drumname','octaveselector'];
 
 // Define block instance objects and any methods that are intra-block.
 function Block(protoblock, blocks, overrideName) {
@@ -533,6 +533,9 @@ function Block(protoblock, blocks, overrideName) {
                     break;
                 case 'modename':
                     this.value = getModeName(DEFAULTMODE);
+                    break;
+                case 'octaveselector':
+                    this.value = getOctaveName(DEFAULTOCTAVE);
                     break;
                 case 'voicename':
                     this.value = DEFAULTVOICE;
@@ -1622,6 +1625,26 @@ function Block(protoblock, blocks, overrideName) {
             labelElem.innerHTML = labelHTML;
             this.label = docById('notenameLabel');
             this.labelattr = docById('noteattrLabel');
+        } else if (this.name === 'octaveselector') {
+           var type = 'octaveselector';
+           if (this.value != null) {
+                var selectedOctave = getOctaveName(this.value);
+            } else {
+                var selectedOctave = getOctaveName(DEFAULTOCTAVE);
+            }
+ 
+            var labelHTML = '<select name="octaveselector" id="octaveselectorLabel" style="position: absolute;  background-color: #00b0a4; width: 60px;">'
+            for (var i = 0; i < OCTAVES.length; i++) {
+                if (selectedOctave === OCTAVES[i][1]) {
+                    labelHTML += '<option value="' + selectedOctave + '" selected>' + OCTAVES[i][0] + '</option>';
+                } else {
+                    labelHTML += '<option value="' + OCTAVES[i][1] + '">' + OCTAVES[i][0]+ '</option>';
+                }
+            }
+ 
+            labelHTML += '</select>';
+            labelElem.innerHTML = labelHTML;
+            this.label = docById('octaveselectorLabel');
         } else if (this.name === 'modename') {
             var type = 'modename';
             if (this.value != null) {

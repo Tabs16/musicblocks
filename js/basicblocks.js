@@ -201,6 +201,12 @@ function initBasicProtoBlocks(palettes, blocks) {
     modenameBlock.valueBlock();
     modenameBlock.dockTypes[0] = 'textout';
 
+    var octaveselectorBlock = new ProtoBlock('octaveselector');
+    octaveselectorBlock.palette = palettes.dict['pitch'];
+    blocks.protoBlockDict['octaveselector'] = octaveselectorBlock;
+    octaveselectorBlock.valueBlock();
+    octaveselectorBlock.dockTypes[0] = 'numberout';
+
     var notenameBlock = new ProtoBlock('notename');
     notenameBlock.palette = palettes.dict['pitch'];
     blocks.protoBlockDict['notename'] = notenameBlock;

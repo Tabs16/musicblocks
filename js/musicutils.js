@@ -357,9 +357,16 @@ var DRUMNAMES = [
     [_('duck'), 'duck', 'images/duck.svg'],
 ];
 
+var OCTAVES = [
+    [_('current'),0],
+    [_('previous'),-1],
+    [_('next'),1],
+];
+
 const DEFAULTVOICE = 'sine';
 const DEFAULTDRUM = 'kick drum';
 const DEFAULTMODE = 'major';
+const DEFAULTOCTAVE = 0;
 
 var customMode = MUSICALMODES['custom'];
 
@@ -445,6 +452,18 @@ function getDrumName(name) {
     }
 
     return null;
+};
+
+function getOctaveName(number) {
+    if (number === '') {
+        number = DEFAULTOCTAVE;
+    } 
+
+    for (var i = 0; i < OCTAVES.length; i++) {
+        if(number === OCTAVES[i][1]) {
+            return number;
+        }
+    }
 };
 
 
