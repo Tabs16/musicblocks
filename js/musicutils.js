@@ -292,6 +292,7 @@ var MODENAMES = [
 var VOICENAMES = [
     //.TRANS: musical instrument
     [_('violin'), 'violin', 'images/voices.svg'],
+    [_('sample'), 'sample', 'images/voices.svg'],
     //.TRANS: musical instrument
     [_('cello'), 'cello', 'images/voices.svg'],
     //.TRANS: musical instrument
@@ -365,7 +366,7 @@ var customMode = MUSICALMODES['custom'];
 
 // The sample has a pitch which is subsequently transposed. This
 // number is that starting pitch.
-const SAMPLECENTERNO = {'violin': 63, 'cello': 39, 'basse': 15};
+const SAMPLECENTERNO = {'violin': 63, 'cello': 39, 'basse': 15, 'sample': 63};
 
 
 function getModeName(name) {
@@ -1257,6 +1258,7 @@ function Synth () {
 
         // voiced samples
         'violin': [VIOLINSOUNDSAMPLE, null],
+        'sample': [SOUNDSAMPLE,null],
         'cello': [CELLOSOUNDSAMPLE, null],
         'basse': [BASSESOUNDSAMPLE, null],
 
@@ -1306,6 +1308,7 @@ function Synth () {
         case 'violin':
         case 'cello':
         case 'basse':
+        case 'sample':
             return this.synthset[name][1];
             break;
         case 'default':
@@ -1365,6 +1368,7 @@ function Synth () {
             case 'violin':
             case 'cello':
             case 'basse':
+            case 'sample':
                 this.synthset[name][1] = new Tone.Sampler(this.synthset[name][0]);
                 break;
             default:
@@ -1420,6 +1424,7 @@ function Synth () {
             break;
         case 'violin':
         case 'cello':
+        case 'sample':
         case 'basse':
             // The violin sample is tuned to C6
             // The cello sample is tuned to C4???
