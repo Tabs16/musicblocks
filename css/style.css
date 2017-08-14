@@ -183,6 +183,19 @@ input[type=range]:focus::-ms-fill-upper {
   text-align: center;
   margin-left: -100px;
 }
+
+#newwrapper0, #newwrapper1, #newwrapper2 {
+  margin-left: 170px;
+  height: 50px;
+}
+#news, #news1, #news2{
+  color: #222;
+  text-shadow: 0px 2px 3px #555;
+  font-weight: bold;
+  width: 100px;
+  text-align: center;
+  margin-left: -100px;
+}
 #s {
   margin-top: 30px;
 }

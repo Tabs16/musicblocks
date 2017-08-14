@@ -19,6 +19,7 @@ function TimbreWidget () {
     this.adsrMap = ['attack', 'decay', 'sustain', 'release'];
     this.fil = [];              //Need to optimise further
     this.filterParams = [];
+    this.filterBlocks = ['filter1', 'filter2'];
     this.osc = [];
     this.oscParams = [];
     this.tremoloEffect = [];
@@ -317,7 +318,7 @@ function TimbreWidget () {
             that.distortionActive = false;
             filterButtonCell.id = "filterButtonCell";
 
-            if (that.fil.length < 2) {
+            if (that.fil.length === 0) {
                 var topOfClamp = that._logo.blocks.blockList[that.blockNo].connections[2];
                 var bottomOfClamp = that._logo.blocks.findBottomBlock(topOfClamp);
                 
@@ -326,10 +327,19 @@ function TimbreWidget () {
 
                 var n = that._logo.blocks.blockList.length - 4;
                 that.fil.push(n);
-                that.filterParams.push('highpass');
-                that.filterParams.push(-12);
-                that.filterParams.push(200);
+                var ob  = {arg0: 'highpass', arg1: -12, arg2: 392};
+                //var ob1 ={arg0: 'ighpass', arg1: 12, arg2: 92}; 
+                that.filterParams.push(ob);
+                //var k = [];
+                //k.push(ob);
+                //k.push(ob1)
+                //console.log(k[0]);
+                //console.log(k[1]);
 
+                console.log(that.filterParams[0].arg0);
+                //console.log(that.filterParams[1]);
+
+               
                 setTimeout(that.blockConnection(4, bottomOfClamp), 500);
             }
             that._filter();
@@ -846,10 +856,9 @@ function TimbreWidget () {
     this._filter = function() {
         var that = this;
         var blockValue = 0;
-
-        if(this.fil.length != 1) {
-            blockValue = this.fil.length - 1;
-        }
+        console.log(that.filterParams[0]);
+        console.log(that.filterParams[0].arg1);
+        console.log(that.filterParams[0].arg2);
 
         docById("filterButtonCell").style.backgroundColor = "#C8C8C8";
         docById("filterButtonCell").onmouseover = function(){};
@@ -864,9 +873,9 @@ function TimbreWidget () {
         timbreTableDiv.innerHTML = '<div id="timbreTable"></div>';
 
         var env = docById('timbreTable');
-        var htmlElements = '<div id="wrapper0"><div id="s" class="rectangle"><span>Type</span></div><div id="sel"></div></div>';
-            htmlElements += '<div id="wrapper1"><div id="s1" class="rectangle"><span></span></div><div id="insideDivFilter"><p><input type="radio" name="rolloff" value="-12"/>-12<input type="radio" name="rolloff" value="-24"/>-24<input type="radio" name="rolloff" value="-48"/>-48<input type="radio" name="rolloff" value="-96"/>-96</p></div></div>';
-            htmlElements += '<div id="wrapper2"><div id="s2" class="rectangle"><span></span></div><div id="insideDivFilter"><input type="range" id="myRangeF2"class ="sliders" style="margin-top:20px" value="2"><span id="myspanF2"class="rangeslidervalue">2</span></div></div>';
+        var htmlElements = '<div id="wrapper0"><div id="s"><span>Type</span></div><div id="sel"></div></div>';
+            htmlElements += '<div id="wrapper1"><div id="s1"><span></span></div><div id="insideDivFilter"><p><input type="radio" name="rolloff" value="-12"/>-12<input type="radio" name="rolloff" value="-24"/>-24<input type="radio" name="rolloff" value="-48"/>-48<input type="radio" name="rolloff" value="-96"/>-96</p></div></div>';
+            htmlElements += '<div id="wrapper2"><div id="s2"><span></span></div><div id="insideDivFilter"><input type="range" id="myRangeF2"class ="sliders" style="margin-top:20px" value="2"><span id="myspanF2"class="rangeslidervalue">2</span></div></div>';
         env.innerHTML = htmlElements;
         var envAppend = document.createElement("div");
         envAppend.id = "envAppend";
@@ -876,9 +885,11 @@ function TimbreWidget () {
         envAppend.style.overflow = "auto";
         env.append(envAppend);
 
-        docById("envAppend").innerHTML = '<button class="btn" id="reset"><b>RESET</b></button>';
+        docById("envAppend").innerHTML = '<button class="btn" id="reset"><b>RESET</b></button><button class="btn" id="add_filter"><b>+F</b></button>';
         var btnReset = docById("reset");
-        btnReset.style.marginLeft = '230px';
+        var addFilter = docById("add_filter");
+        btnReset.style.marginLeft = '180px';
+        addFilter.style.marginLeft = '50px';
 
         var myDiv = docById("sel");
         
@@ -892,17 +903,20 @@ function TimbreWidget () {
         document.getElementById("wrapper0").addEventListener('change', function(event){
             docById("filterButtonCell").style.backgroundColor = "#C8C8C8";
             var elem = event.target;
+            blockValue = 0;
             that._update(blockValue, elem.value, 0);
         });
 
         var rolloffValue = document.getElementsByName("rolloff");
         for (var i = 0; i < rolloffValue.length; i++) {
             rolloffValue[i].onclick = function () {
+                blockValue = 0;
                 that._update(blockValue, this.value, 1);
             }
         }
         document.getElementById("wrapper2").addEventListener('change', function(event){
             docById("filterButtonCell").style.backgroundColor = "#C8C8C8";
+            blockValue = 0;
             var elem = event.target;
             var m = elem.id.slice(-1);
             docById("myRangeF2").value = parseFloat(elem.value);
@@ -916,28 +930,100 @@ function TimbreWidget () {
         
         docById("s1").textContent = "RollOff";
         docById("s2").textContent = "Frequency";
+        docById("myRangeF2").value = "392";
         docById("myspanF2").textContent = "392";
 
-        docById('sel1').value = that.filterParams[0];
-        that._update(blockValue, that.filterParams[0], 0);
-
-        that._update(blockValue, that.filterParams[1], 1);
+        console.log("0"+that.filterParams[0].arg1);
         
-        docById("myRangeF2").value = parseFloat(that.filterParams[2]);
-        docById("myspanF2").textContent = that.filterParams[2];
-        that._update(blockValue, that.filterParams[2], 2);
+        docById('sel1').value = that.filterParams[0].arg0;
+        that._update(blockValue, that.filterParams[0].arg0, 0);
+
+        that._update(blockValue, that.filterParams[0].arg1, 1);
+        
+        docById("myRangeF2").value = parseFloat(that.filterParams[0].arg2);
+        docById("myspanF2").textContent = that.filterParams[0].arg2;
+        that._update(blockValue, that.filterParams[0].arg2, 2);
         
 
         btnReset.onclick = function() {
             docById("filterButtonCell").style.backgroundColor = MATRIXBUTTONCOLOR;
-            docById('sel1').value = that.filterParams[0];
-            that._update(blockValue, that.filterParams[0], 0);
-            that._update(blockValue, that.filterParams[1], 1);
-            docById("myRangeF2").value = parseFloat(that.filterParams[2]);
-            docById("myspanF2").textContent = that.filterParams[2];
-            that._update(blockValue, that.filterParams[2], 2);
-        
+            docById('sel1').value = that.filterParams[0].arg0;
+            that._update(blockValue, that.filterParams[0].arg0, 0);
+            that._update(blockValue, that.filterParams[0].arg1, 1);
+            docById("myRangeF2").value = parseFloat(that.filterParams[0].arg2);
+            docById("myspanF2").textContent = that.filterParams[0].arg2;
+            that._update(blockValue, that.filterParams[0].arg2, 2);
+            if(that.fil.length === 2){
+                docById('sel2').value = that.filterParams[1].arg0;
+                that._update(blockValue, that.filterParams[1].arg0, 0);
+                that._update(blockValue, that.filterParams[1].arg1, 1);
+                docById("newmyRangeF2").value = parseFloat(that.filterParams[1].arg2);
+                docById("newmyspanF2").textContent = that.filterParams[1].arg2;
+                that._update(blockValue, that.filterParams[1].arg2, 2);
+            }
         }
+
+        addFilter.onclick = function() {
+              if (that.fil.length < 2) {
+                var topOfClamp = that._logo.blocks.blockList[that.blockNo].connections[2];
+                var bottomOfClamp = that._logo.blocks.findBottomBlock(topOfClamp);
+                
+                const FILTEROBJ = [[0,['filter',{}],0,0,[null,3,1,2,null]],[1,["number",{"value":-12}],512.5,289.5,[0]],[2,["number",{"value":392}],512.5,321,[0]],[3,["filtertype",{"value":"highpass"}],512.5,258,[0]]];
+                that._logo.blocks.loadNewBlocks(FILTEROBJ);
+
+                var n = that._logo.blocks.blockList.length - 4;
+                that.fil.push(n);
+                var ob1  = {arg0: 'highpass', arg1: -12, arg2: 392};
+                that.filterParams.push(ob1);
+                //console.log(that.filterParams[0]);
+                //console.log(that.filterParams[1]);
+                setTimeout(that.blockConnection(4, bottomOfClamp), 500);
+            
+                var extraDiv = document.createElement("div");
+                var newHtmlElements = '<br><div id="newwrapper0"><div id="news"><span>Type</span></div><div id="newsel"></div></div>';
+                newHtmlElements += '<div id="newwrapper1"><div id="news1"><span>RollOff</span></div><div id="insideDivFilter"><p><input type="radio" name="rolloff1" value="-12"/>-12<input type="radio" name="rolloff1" value="-24"/>-24<input type="radio" name="rolloff1" value="-48"/>-48<input type="radio" name="rolloff1" value="-96"/>-96</p></div></div>';
+                newHtmlElements += '<div id="newwrapper2"><div id="news2"><span>Frequency</span></div><div id="insideDivFilter"><input type="range" id="newmyRangeF2"class ="sliders" style="margin-top:20px" value="2"><span id="newmyspanF2"class="rangeslidervalue">2</span></div></div>';
+                extraDiv.className = "rectangle";
+                extraDiv.innerHTML = newHtmlElements;
+                env.insertBefore(extraDiv, envAppend);
+                var selectOpt1 = selectOpt;
+                selectOpt1.id = "sel2";
+                docById("newsel").innerHTML = selectOpt1;
+                docById("newsel").style.marginTop = "-35px";
+
+                docById("newmyRangeF2").value = "392";
+                docById("newmyspanF2").textContent = "392";
+
+                docById("newmyRangeF2").max = "7050";
+
+                document.getElementById("newwrapper0").addEventListener('change', function(event){
+                    docById("filterButtonCell").style.backgroundColor = "#C8C8C8";
+                    blockValue = that.fil.length - 1;
+                    var elem = event.target;
+                    that._update(blockValue, elem.value, 0);
+                });
+
+                var rolloffValue = document.getElementsByName("rolloff1");
+                for (var i = 0; i < rolloffValue.length; i++) {
+                    blockValue = that.fil.length - 1;
+                    rolloffValue[i].onclick = function () {
+                        that._update(blockValue, this.value, 1);
+                    }
+                }
+                document.getElementById("newwrapper2").addEventListener('change', function(event){
+                    docById("filterButtonCell").style.backgroundColor = "#C8C8C8";
+                    blockValue = that.fil.length - 1;
+                    var elem = event.target;
+                    var m = elem.id.slice(-1);
+                    docById("newmyRangeF2").value = parseFloat(elem.value);
+                    docById("newmyspanF2").textContent = elem.value;
+                    that._update(blockValue, elem.value, 2);
+                });
+            }
+            
+
+        }
+
     };
 
     this._effects = function(){
